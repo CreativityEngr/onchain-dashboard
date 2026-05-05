@@ -1,11 +1,16 @@
-const cors = require("cors");
+require("dotenv").config();
 
 const express = require("express");
+const cors = require("cors");
 
 const app = express();
-app.use(cors());
 
+const walletRoutes = require("./routes/wallet");
+
+app.use(cors());
 app.use(express.json());
+
+app.use("/wallet", walletRoutes);
 
 app.get("/", (req, res) => {
   res.send("API running");
@@ -14,6 +19,3 @@ app.get("/", (req, res) => {
 app.listen(5000, () => {
   console.log("Server running on port 5000");
 });
-
-const walletRoutes = require("./routes/wallet");
-app.use("/wallet", walletRoutes);

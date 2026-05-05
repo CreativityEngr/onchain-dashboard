@@ -17,7 +17,7 @@ const ethBalance = ethers.formatEther(balance);
 
 let txs = [];
 
-const ETHERSCAN_API_KEY = "Q39DIBNY5K2Q98KQS1TD4XKCXWKD18C8PX";
+const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY;
 
 try {
 const historyRes = await axios.get(
