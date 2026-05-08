@@ -1,0 +1,30 @@
+const STABLECOINS = new Set(["USDT", "USDC", "DAI"]);
+const SUPPORTED_PNL_ASSETS = new Set(["AVAX", "ETH"]);
+const COINGECKO_IDS = {
+  AVAX: "avalanche-2",
+  ETH: "ethereum",
+};
+
+const MAX_REASONABLE_FLOW_USD = 100_000_000;
+const MIN_PNL_ACQUIRED_RATIO = 0.1;
+
+const VALUE_THRESHOLDS = {
+  whale: 1_000_000,
+  highNetWorth: 100_000,
+  midHolder: 10_000,
+};
+
+const LARGE_NATIVE_HOLDINGS = {
+  ETH: 1_000,
+  AVAX: 100_000,
+};
+
+module.exports = {
+  COINGECKO_IDS,
+  LARGE_NATIVE_HOLDINGS,
+  MAX_REASONABLE_FLOW_USD,
+  MIN_PNL_ACQUIRED_RATIO,
+  STABLECOINS,
+  SUPPORTED_PNL_ASSETS,
+  VALUE_THRESHOLDS,
+};

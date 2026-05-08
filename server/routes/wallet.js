@@ -1,56 +1,26 @@
-const axios = require("axios");
-
 const express = require("express");
-const router = express.Router();
 const { ethers } = require("ethers");
 
-const provider = new ethers.JsonRpcProvider(
-  "https://ethereum.publicnode.com"
-);
+const { getChain } = require("../config/chains");
+const {
+  fallbackResponse,
+  getWalletAnalytics,
+} = require("../services/walletService");
+
+const router = express.Router();
 
 router.get("/:address", async (req, res) => {
+  const { address } = req.params;
+  const config = getChain(req.query.chain);
+
   try {
-    const { address } = req.params;
+    if (!ethers.isAddress(address)) {
+      return res.json(fallbackResponse(address, config));
+    }
 
-   const balance = await provider.getBalance(address);
-const ethBalance = ethers.formatEther(balance);
-
-let txs = [];
-
-const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY;
-
-try {
-const historyRes = await axios.get(
-  `https://api.etherscan.io/v2/api?chainid=1&module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&sort=desc&apikey=${ETHERSCAN_API_KEY}`
-);
-
-  if (Array.isArray(historyRes.data.result)) {
-    txs = historyRes.data.result.slice(0, 5);
-  }
-} catch (err) {
-  console.log("tx fetch error:", err.message);
-}
-
-// get ETH price (USD)
-const priceRes = await axios.get(
-  "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd"
-);
-
-const ethPrice = priceRes.data.ethereum.usd;
-
-// calculate USD value
-const usdValue = (parseFloat(ethBalance) * ethPrice).toFixed(2);
-
-res.json({
-  address,
-  balance: ethBalance,
-  usd: usdValue,
-  txs
-});
-
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ error: "Invalid address" });
+    return res.json(await getWalletAnalytics(address, config));
+  } catch {
+    return res.json(fallbackResponse(address, config));
   }
 });
 

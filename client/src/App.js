@@ -1,66 +1,116 @@
 import { useState } from "react";
 import axios from "axios";
+import { isAddress } from "ethers";
+
+import AnalyticsPanel from "./components/AnalyticsPanel";
+import SearchBar from "./components/SearchBar";
+import SearchHistory from "./components/SearchHistory";
+import WalletOverview from "./components/WalletOverview";
+import {
+  clearPersistedSearchHistory,
+  createSearchHistory,
+  loadSearchHistory,
+  persistSearchHistory,
+} from "./utils/searchHistory";
+import "./styles/responsive.css";
 
 function App() {
   const [address, setAddress] = useState("");
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [chain, setChain] = useState("avax");
+  const [searchHistory, setSearchHistory] = useState(loadSearchHistory);
 
-  const fetchWallet = async () => {
-    if (!address || address.length !== 42) {
-      alert("Enter a valid wallet address");
+  const saveSearchHistory = (nextAddress, nextChain) => {
+    setSearchHistory((currentHistory) => {
+      const nextHistory = createSearchHistory(
+        currentHistory,
+        nextAddress,
+        nextChain
+      );
+
+      persistSearchHistory(nextHistory);
+      return nextHistory;
+    });
+  };
+
+  const clearSearchHistory = () => {
+    setSearchHistory([]);
+    clearPersistedSearchHistory();
+  };
+
+  const fetchWallet = async (nextAddress = address, nextChain = chain) => {
+    const cleanAddress =
+      typeof nextAddress === "string" ? nextAddress.trim() : address.trim();
+
+    if (!isAddress(cleanAddress)) {
+      alert("Enter valid address");
       return;
     }
 
     try {
       setLoading(true);
+      setAddress(cleanAddress);
+      setChain(nextChain);
+
       const res = await axios.get(
-        `http://localhost:5000/wallet/${address}`
+        `http://localhost:5000/wallet/${cleanAddress}?chain=${nextChain}`
       );
+
       setData(res.data);
-    } catch (err) {
-      console.log(err);
+      saveSearchHistory(cleanAddress, nextChain);
+    } catch {
+      setData(null);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div style={{ padding: "20px", fontFamily: "Arial" }}>
-      <h2>ChainLens</h2>
+    <div
+      className="app-shell"
+      style={{
+        background: "#0b0f19",
+        minHeight: "100vh",
+        color: "white",
+        padding: "30px",
+        fontFamily: "Arial",
+      }}
+    >
+      <h2 className="app-title" style={{ color: "#3b82f6" }}>
+        ChainLens Dashboard
+      </h2>
 
-      <input
-        value={address}
-        onChange={(e) => setAddress(e.target.value)}
-        placeholder="Enter wallet address"
-        style={{
-          padding: "10px",
-          marginRight: "10px",
-          width: "300px"
-        }}
+      <SearchBar
+        address={address}
+        chain={chain}
+        loading={loading}
+        onAddressChange={setAddress}
+        onChainChange={setChain}
+        onSubmit={() => fetchWallet()}
       />
 
-      <button onClick={fetchWallet}>
-        Fetch
-      </button>
+      <SearchHistory
+        history={searchHistory}
+        onClear={clearSearchHistory}
+        onSelect={fetchWallet}
+      />
 
-      {loading && <p>Loading...</p>}
+      {loading && <p style={{ marginTop: "20px" }}>Loading...</p>}
 
       {data && (
-        <div style={{ marginTop: "20px" }}>
-          <p><strong>Address:</strong> {data.address}</p>
-          <p><strong>Balance:</strong> {data.balance} ETH</p>
-          <p><strong>Value:</strong> ${data.usd}</p>
-
-          <h3>Recent Transactions</h3>
-
-          {Array.isArray(data.txs) && data.txs.map((tx, index) => (
-            <div key={index}>
-              <p>Hash: {tx.hash}</p>
-              <p>Value: {parseFloat(tx.value) / 1e18} ETH</p>
-              <hr />
-            </div>
-          ))}
+        <div
+          className="dashboard-grid"
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "30px",
+            marginTop: "30px",
+            alignItems: "flex-start",
+          }}
+        >
+          <WalletOverview wallet={data} />
+          <AnalyticsPanel wallet={data} />
         </div>
       )}
     </div>

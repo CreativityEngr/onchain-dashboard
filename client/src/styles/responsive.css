@@ -1,0 +1,153 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  overflow-x: hidden;
+}
+
+.app-shell {
+  background: #0b0f19;
+  color: white;
+  font-family: Arial, sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  padding: 30px;
+}
+
+.app-title {
+  color: #3b82f6;
+  font-size: 24px;
+  margin: 0;
+}
+
+.search-row {
+  align-items: stretch;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.history-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.chain-select,
+.wallet-input,
+.analyze-button {
+  min-height: 42px;
+}
+
+.wallet-input {
+  width: min(320px, 100%);
+}
+
+.dashboard-grid {
+  align-items: flex-start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  margin-top: 30px;
+}
+
+.wallet-panel {
+  flex: 1 1 520px;
+  min-width: 0;
+}
+
+.analytics-panel {
+  flex: 1 1 340px;
+  max-width: 420px;
+  min-width: 0;
+}
+
+.panel-card {
+  background: #111827;
+  border: 1px solid #1f2937;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.wallet-address {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.chart-box {
+  height: 190px;
+  width: 100%;
+}
+
+.portfolio-chart {
+  height: 220px;
+}
+
+@media (max-width: 720px) {
+  .app-shell {
+    padding: 18px;
+  }
+
+  .app-title {
+    font-size: 21px;
+  }
+
+  .search-row,
+  .dashboard-grid,
+  .history-list {
+    gap: 14px;
+  }
+
+  .chain-select,
+  .wallet-input,
+  .analyze-button,
+  .clear-history-button {
+    margin-right: 0 !important;
+    width: 100% !important;
+  }
+
+  .wallet-panel,
+  .analytics-panel {
+    flex-basis: 100%;
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .panel-card {
+    padding: 16px;
+  }
+
+  .panel-card h3 {
+    font-size: 17px;
+  }
+
+  .panel-card p {
+    font-size: 14px;
+  }
+
+  .chart-box {
+    height: 180px;
+  }
+
+  .portfolio-chart {
+    height: 200px;
+  }
+}
+
+@media (max-width: 420px) {
+  .app-shell {
+    padding: 14px;
+  }
+
+  .chart-box {
+    height: 165px;
+  }
+
+  .portfolio-chart {
+    height: 185px;
+  }
+}
